@@ -2,7 +2,13 @@
 
 把任务、工作记录和可复用终端放在一起。面向 **macOS + iTerm2 + SSH / tmux** 的本地工作台。
 
-[稳定版下载](https://github.com/wang202111/TerminalWorkBar/releases/latest) · [所有版本 / 开发预发布](https://github.com/wang202111/TerminalWorkBar/releases) · [安装与升级](terminal-workspace-release/INSTALL.md) · [完整交接](terminal-workspace-release/HANDOFF.md) · [开发与发布](terminal-workspace-release/RELEASING.md)
+[在线动画演示与手册](https://wang202111.github.io/TerminalWorkBar/) · [稳定版下载](https://github.com/wang202111/TerminalWorkBar/releases/latest) · [所有版本 / 开发预发布](https://github.com/wang202111/TerminalWorkBar/releases) · [安装与升级](terminal-workspace-release/INSTALL.md) · [完整交接](terminal-workspace-release/HANDOFF.md) · [开发与发布](terminal-workspace-release/RELEASING.md)
+
+## 不安装，先体验
+
+公开网站：**<https://wang202111.github.io/TerminalWorkBar/>**。首页是可暂停、可手动操作的动画演示；页头还有产品短片和完整手册。无需登录、安装应用或连接本机服务。网站部署规则与首次启用步骤见 [Pages 说明](terminal-workspace-release/RELEASING.md#9-github-pages-公开说明网站)。
+
+网站只使用虚构示例和内存模拟 API，不连接你的终端，不读取个人任务、SSH config 或密钥。它跟随 `main` 的稳定维护线更新；某个已发布版本的固定文档仍可从 Release 下载离线 Guide ZIP。
 
 ## 先下载哪个？
 

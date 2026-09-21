@@ -164,3 +164,33 @@ Terminal-Workspace-Guide-<GUIDE_VERSION>.zip.sha256
 - GitHub CLI Release 创建：<https://cli.github.com/manual/gh_release_create>
 - Release 编辑：<https://cli.github.com/manual/gh_release_edit>
 - GitHub Actions token：<https://docs.github.com/en/actions/security-for-github-actions/security-guides/automatic-token-authentication>
+
+## 9. GitHub Pages 公开说明网站
+
+站点地址：**<https://wang202111.github.io/TerminalWorkBar/>**。
+
+首页 `index.html` 是可操作的自动演示；`film.html` 是产品短片，`manual.html` 是完整手册。无需登录或运行本机服务，手机也能访问。所有资源使用相对路径，支持项目子目录 `/TerminalWorkBar/`，离线 ZIP 保持可用。
+
+### 首次启用（仓库管理员操作一次）
+
+1. 登录 GitHub，打开仓库 **Settings → Pages**。
+2. 在 **Build and deployment → Source** 中选择 **GitHub Actions**，不要选从分支部署，也不需要另建 `gh-pages` 分支。
+3. 进入 **Actions → Publish documentation site**，选择 `main`，点 **Run workflow**；若之前的部署因 Pages 未启用而失败，也可以重新运行失败的工作流。
+4. 等 build / deploy 都成功，再打开上面的站点地址。若设置要求审批 `github-pages` 环境，管理员先批准该次部署。
+
+如果 Settings 显示 404，请先确认已登录且对仓库有管理权限。推送源码使用的 SSH 权限不等于浏览器登录，也不替代 Pages 首次启用权限。部署使用短期 `GITHUB_TOKEN`，不需要提供 PAT 或把令牌写进仓库。
+
+### 自动更新规则
+
+- `.github/workflows/pages.yml` 只在 `main` push 或手动触发时运行；从其他分支手动触发会跳过，`dev` 和预发布不会覆盖公开站点。
+- 构建先运行 `tools/check.py`，通过源码白名单、版本与两套包的校验后，只上传生成的 Guide **目录**。
+- 不上传工作目录、Git 历史、应用 ZIP、安装后的程序、个人 TODO、SSH 文件、备份或运行令牌。
+- Pages 发布与 GitHub Release 是两套流程。更新文档可以提交到 main 后直接部署，不必创建应用 Tag，也不覆盖旧 Release 附件；在线页面代表最新 main，而不是某个 ZIP 的永久快照。
+- `github-pages` 环境记录部署提交与访问地址。部署失败时查看对应 Actions 日志，旧的成功站点保持可用。首次部署失败时站点可能仍为 404。
+- 部署 job 只有 `pages: write`、`id-token: write`；构建 job 只读仓库。Pages Actions 固定 SHA，不设置自定义域名，也不修改现有账号站点。
+
+线上演示的 iframe 仍是无同源权限的沙箱，真实表单接入内存模拟后端，CSP 禁止网络 API；不会连接访问者的 localhost 或真实终端。导入个人文件和写文件入口在演示中禁用。关闭 / 刷新页面会丢失演示修改。
+
+说明网站是公开内容：任何人都能阅读和下载其中的文档、合成示例及演示前端。公开页面的内容不要放私人数据。浏览器正常访问会向 GitHub Pages 服务发送 HTTP 请求；“不连接真实终端”不等于网站不联网。
+
+官方部署文档：<https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages>。

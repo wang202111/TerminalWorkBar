@@ -20,7 +20,7 @@ from versioning import validate_version
 
 
 def tracked_sources():
-    expected = {'.gitignore', 'README.md', 'Install.command', '.github/workflows/ci.yml', '.github/workflows/release.yml', 'tools/check.py', 'tools/set_version.py'}
+    expected = {'.gitignore', 'README.md', 'Install.command', '.github/workflows/ci.yml', '.github/workflows/release.yml', '.github/workflows/pages.yml', 'tools/check.py', 'tools/set_version.py'}
     expected.update(component + '/' + filename for component, files in build_release.COMPONENTS.items() for filename in files)
     expected.update('terminal-workspace-release/' + filename for filename in build_release.ASSETS)
     expected.update('terminal-workspace-release/' + filename for filename in ['SITE.md', 'GUIDE_VERSION', 'build_guide.py'])

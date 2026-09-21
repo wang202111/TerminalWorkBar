@@ -4,6 +4,8 @@
 
 ## 最简单的打开方式
 
+公开在线地址：**<https://wang202111.github.io/TerminalWorkBar/>**。首次启用后由 GitHub Actions 从 `main` 自动部署；不用安装、登录或启动本地服务。在线版跟随稳定维护线，离线 ZIP 则保留发布时的内容。网站只演示合成数据，不连接真实终端。Pages 设置与维护步骤见 `reference/RELEASING.md`（源码目录中为 `RELEASING.md`）。
+
 解压 `Terminal-Workspace-Guide-<版本>.zip`，双击里面的 `index.html`，以 1.5 倍速自动演示，可切换 2 倍或正常速度。每段只播放一遍，结束后保留结果；点击“重播演示”才重新开始。不要只复制 HTML；保留整个文件夹结构。
 
 ### 1.3.1 修复页面跳动
