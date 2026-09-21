@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Terminal Workspace 中文使用手册：安装、任务层级、SSH 与 tmux、Markdown 往返、迁移和安全边界。附离线交互演示。">
+  <meta name="referrer" content="no-referrer">
+  <title>Terminal Workspace · 完整手册</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="guide-data.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到正文</a>
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">›_</span><span>Terminal <strong>Workspace</strong></span><span class="version">返回动画 ↗</span></a>
+    <div class="top-actions"><span class="offline-label"><i></i> 离线可读 · 中文手册</span><button id="print-guide" class="text-button" type="button">打印 / PDF</button><button id="menu-toggle" type="button" aria-expanded="false" aria-controls="navigation">目录 ☰</button></div>
+  </header>
+  <aside id="navigation" class="navigation" aria-label="使用手册目录">
+    <label class="search-label" for="guide-search">搜索手册 <kbd>/</kbd></label>
+    <input id="guide-search" type="search" placeholder="试试：tmux、迁移、删除" autocomplete="off">
+    <div id="search-results" class="search-results" aria-live="polite" hidden></div>
+    <nav id="chapter-nav">
+      <p class="nav-group">开始使用</p>
+      <a href="#overview" aria-current="location"><span>01</span> 认识工作台</a>
+      <a href="#installation"><span>02</span> 安装与首次启动</a>
+      <a href="#first-task"><span>03</span> 创建第一个工作流</a>
+      <p class="nav-group">日常工作</p>
+      <a href="#playground"><span>04</span> 动画与交互体验 <em>试一试</em></a>
+      <a href="#task-tree"><span>05</span> 任务层级与工作记录</a>
+      <a href="#terminals"><span>06</span> 终端入口与关联</a>
+      <a href="#ssh-tmux"><span>07</span> SSH 与 tmux</a>
+      <a href="#markdown"><span>08</span> Markdown 导入导出</a>
+      <a href="#obsidian"><span>09</span> Obsidian 与 URL 跳转</a>
+      <p class="nav-group">管理与维护</p>
+      <a href="#deletion"><span>10</span> 删除、备份与恢复</a>
+      <a href="#migration"><span>11</span> 升级与换电脑</a>
+      <a href="#troubleshooting"><span>12</span> 常见问题与排错</a>
+      <a href="#reference"><span>13</span> 命令行与数据位置</a>
+      <a href="#resources"><span>14</span> 示例、交接与维护</a>
+    </nav>
+    <div class="nav-note"><span class="tiny-label">你的工作，留在本机</span><p>这是一份独立说明网站。<br>不是任务面板，不读取你的配置。</p></div>
+  </aside>
+  <main id="main">
+    <section id="overview" class="chapter hero" data-title="认识工作台：V1 V2 概念与安全边界">
+      <div class="eyebrow"><span></span> TERMINAL WORKSPACE / FIELD GUIDE</div>
+      <h1>让任务，有一个<br><span>可以回去的终端。</span></h1>
+      <p class="hero-description">用层级组织工作，用终端继续执行，用 Markdown 留下记录。<br>从第一次安装，到把整套工作方式带到下一台 Mac。</p>
+      <div class="hero-actions"><a class="button primary" href="#installation">从安装开始 <span>↗</span></a><a class="button secondary" href="#playground">先体验一下 <span>↓</span></a></div>
+      <div class="hero-tags"><span>macOS + iTerm2</span><span>本地优先</span><span>多级任务树</span><span>Markdown 往返</span></div>
+      <div class="overview-visual" role="img" aria-label="工作方式示意：Markdown 文档手动导入导出任务树，任务关联命令入口；点击后由 Terminal Jump 创建或定位 iTerm2 终端，可连接 SSH 与 tmux。">
+        <div class="visual-card document-card"><span class="visual-caption">记录与分享</span><strong><span class="file-icon">M↓</span> Markdown</strong><div class="fake-line long"></div><div class="fake-line"></div><div class="fake-line short"></div><small>你的编辑器 / Obsidian</small></div>
+        <div class="visual-arrow"><span>⇄</span><small>手动导入 / 导出</small></div>
+        <div class="visual-card tree-card"><span class="visual-caption">组织与关联</span><strong>任务工作树</strong><div class="mini-tree">▾ 示例项目<br><span>├ □ 检查环境</span><br><span>└ ▾ 准备发布</span><br><span class="deep">└ □ 验证结果 <b>›_</b></span></div></div>
+        <div class="visual-arrow"><span>→</span><small>明确点击打开</small></div>
+        <div class="visual-card terminal-card"><span class="visual-caption">执行与继续</span><strong>›_ iTerm2</strong><code>$ ssh demo-dev<br>$ tmux -u a -t workspace<br><span>▍</span></code><small>已有连接 → 定位，不重跑</small></div>
+      </div>
+      <p class="caption">上图是工作流示意。网页、文档和任务描述本身不会自动执行命令。</p>
+      <div class="section-heading"><span class="section-number">01</span><h2>先分清这三个名字</h2></div>
+      <div class="cards three"><article class="info-card"><span class="card-index">SUITE</span><h3>Terminal Workspace</h3><p>整套发行包的名字。包含下面两个组件，不是第三个服务。</p></article><article class="info-card"><span class="card-index">V1 · LAUNCHER</span><h3>Terminal Jump</h3><p>独立原生 App，管理命令，处理 URL，创建或定位 iTerm2 中的终端。</p></article><article class="info-card"><span class="card-index">V2 · SIDEBAR</span><h3>Terminal Sidebar</h3><p>iTerm2 右侧的任务面板：层级、记录、终端关联、Markdown 导入导出。</p></article></div>
+      <div class="callout"><strong>共用命令，不共用任务界面。</strong><p>两版共用命令配置。V2 修改或删除某个终端入口，也会影响 V1 和引用它的 URL。任务与记录保存在侧栏自己的任务库中。</p></div>
+      <div class="boundary-grid"><div><h3>它会做</h3><ul><li>每一级节点关联自己的终端。</li><li>保存配置，等你明确点击才执行。</li><li>再次点击受管理的运行入口，定位已有 pane。</li><li>将任务和记录导出为层级 Markdown。</li></ul></div><div><h3>它不会做</h3><ul><li>自动录屏、读终端输出或采集 shell 历史。</li><li>自动同步 Obsidian、云端或另一台电脑。</li><li>自动接管你手动打开的 SSH 终端。</li><li>把任务描述、Markdown 内容当指令执行。</li></ul></div></div>
+    </section>
+
+    <section id="installation" class="chapter" data-title="安装与首次启动：macOS Python iTerm2 权限">
+      <div class="section-heading"><span class="section-number">02</span><h2>安装与首次启动</h2></div>
+      <p class="lead">换一台 Mac 也能重新安装。不需要相同用户名、旧电脑目录或原来的 Python 路径。</p>
+      <div class="callout warm"><strong>这是源码安装包，不是免环境的预编译 App。</strong><p>需要 macOS 14+、Python 3.11+、iTerm2，以及首次编译所需的 Apple Command Line Tools。安装依赖需要联网；本说明网站自身不需要。</p></div>
+      <h3>先准备四项环境</h3>
+      <div class="table-wrap"><table><thead><tr><th>环境</th><th>要求 / 操作</th><th>说明</th></tr></thead><tbody><tr><td>macOS</td><td>14 或更新版本</td><td>只面向 Mac，不是 Windows / Linux 安装包。</td></tr><tr><td>iTerm2</td><td>放在 <code>/Applications/iTerm.app</code></td><td>这是标准安装位置，不是开发者个人路径。</td></tr><tr><td>Python</td><td>3.11+；已有 Homebrew 可用 <code>brew install python</code></td><td>也可使用 Python 官方安装器，无须为此额外安装 Homebrew。</td></tr><tr><td>Command Line Tools</td><td><code>xcode-select --install</code></td><td>等待系统安装结束，再运行本工具安装器。</td></tr></tbody></table></div>
+      <ol class="steps"><li><h3>解压整个发布包</h3><p>找到 <code>Terminal-Workspace-1.0.0-macOS-source.zip</code>，解压到普通本地目录。保留文件夹结构；本网站 ZIP 是说明文档，不代替应用安装包。</p></li><li><h3>双击 Install.command</h3><p>安装器会检查环境、安装专用 Python 依赖、生成本机 App。不要使用 sudo。新安装是空任务、空命令，不导入示例。</p></li><li><h3>开启 Python API 并授权</h3><p>打开 iTerm2 设置，搜索 <strong>Python API</strong> 并启用。首次脚本连接或 Apple Events 自动化请求，按系统提示批准必要访问；安装器不会替你绕过授权。</p></li><li><h3>打开 Terminal Sidebar.app</h3><p>在当前用户的 <code>~/Applications/</code> 中打开它，任务面板显示在 iTerm2 右侧 Toolbelt。没有登录自启；需要时再打开 App。</p></li></ol>
+      <h3>想先检查，不安装？</h3><p>在解压的<strong>应用发布包</strong>目录执行：</p>
+      <div class="code-block"><div class="code-heading"><span>只读检查</span><button type="button" data-copy="install-check">复制</button></div><pre id="install-check"><code>python3 install.py --check</code></pre></div>
+      <p>若 <code>python3</code> 仍指向旧解释器，请使用新 Python 的完整路径。安装器会根据当前电脑生成运行路径，不能把旧机器的已安装 App / venv 直接当便携包复制。</p>
+      <details><summary>macOS 阻止打开，或者双击后提示缺少环境？</summary><p>先确认包的来源可信，再使用系统提供的“打开”批准流程。也可在解压目录运行 <code>bash Install.command</code>。不要关闭系统安全检查或批量移除陌生文件的安全属性。依赖不全时按提示补齐，再重试。</p></details>
+      <details><summary>安装后面板在哪里？会默认打开 Profiles 吗？</summary><p>本实现注册的是右侧 Toolbelt 网页工具，不是左侧标签栏。显式打开 App 时展示侧栏，不主动启用 Profiles 工具。若没有窗口，注册过程可能创建一个 iTerm2 窗口；新终端使用 iTerm2 默认 profile，这与显示 Profiles 工具是两回事。</p></details>
+      <p class="reference-link">完整步骤与卸载说明：<a href="reference/INSTALL.md" download>下载 INSTALL.md</a></p>
+    </section>
+
+    <section id="first-task" class="chapter" data-title="创建第一个工作流：新建任务 新建终端并关联 保存">
+      <div class="section-heading"><span class="section-number">03</span><h2>从一个安全的本地示例开始</h2></div>
+      <p class="lead">不用先连服务器，也不用在两个窗口之间来回切换。</p>
+      <div class="workflow"><div><b>1</b><strong>添加任务</strong><small>检查本地环境</small></div><span>→</span><div><b>2</b><strong>新建终端并关联</strong><small>本地 Shell 脚本</small></div><span>→</span><div><b>3</b><strong>两次保存</strong><small>保存入口 → 保存任务</small></div><span>→</span><div><b>4</b><strong>点击打开</strong><small>此时才运行命令</small></div></div>
+      <ol class="plain-steps"><li>在真实侧栏点 <strong>「＋ 添加任务」</strong>，名称填写“检查本地环境”，类型选“任务 / 步骤”。</li><li>点 <strong>「＋ 新建终端并关联」</strong>，入口名称填“示例：本地输出”，类型选“本地 Shell 脚本”。</li><li>链接 ID 填 <code>demo-shell</code>，粘贴下面的脚本。如果 ID 已被使用，换一个并同步修改相关示例链接。</li><li>点 <strong>「保存入口，不执行」</strong>。回到任务窗口后，确认已选中新入口，再点 <strong>「保存任务」</strong>。</li><li>点击任务的终端按钮。只有这一步才打开 iTerm2 并运行脚本。</li></ol>
+      <div class="code-block"><div class="code-heading"><span>仅输出一行文字，不连接远端</span><button type="button" data-copy="first-script">复制</button></div><pre id="first-script"><code>printf 'Demo terminal\n'</code></pre></div>
+      <div class="callout"><strong>入口保存和任务保存是两件事。</strong><p>入口一旦保存就已写入共享配置；如果接着取消任务编辑，入口仍然存在。这个输出示例会很快退出，适合验证安装，但不适合观察“运行中复用”。复用可先在下面的安全演示中体验。</p></div>
+      <p>接下来可以新增一个“目录 / 项目”，将任务的“上级节点”改成它；再添加子任务和工作记录。远端工作流只需把入口类型换成 SSH + tmux，任务组织方式不变。</p>
+    </section>
+
+    <section id="playground" class="chapter" data-title="动画与交互体验：播放 暂停 任务树 展开 关联终端 模拟打开 复用">
+      <div class="section-heading"><span class="section-number">04</span><h2>先点一遍，再开始自己的工作</h2></div>
+      <p class="lead">播放一段约 30 秒的模拟操作，或切换到自由体验。无需打开任何真实应用。</p>
+      <div class="demo-notice"><span class="pill">安全演示</span><span>全是虚构内容 · 仅当前页面内存 · 不读取配置 · 不连接 SSH · 不调用应用 API</span></div>
+      <div class="tour-player" aria-label="模拟操作动画控制">
+        <div class="tour-controls"><button id="tour-play" class="primary" type="button" aria-pressed="false">▶ 播放演示</button><button id="tour-previous" type="button" aria-label="上一步动画">←</button><button id="tour-next" type="button" aria-label="下一步动画">→</button><span id="tour-counter">01 / 07</span><label for="tour-speed">速度 <select id="tour-speed"><option value="1">1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label><button id="tour-free" type="button">自由体验</button></div>
+        <div id="tour-steps" class="tour-steps" role="group" aria-label="跳到指定动画步骤"></div>
+        <div class="tour-caption" aria-live="polite"><strong id="tour-title">01 · 认识工作区</strong><span id="tour-description">左边执行，右边组织。点播放，观看整个过程；也可以按箭头逐步查看。</span></div>
+      </div>
+      <div class="demo-window">
+        <div class="window-chrome"><div class="traffic-lights" aria-hidden="true"><i></i><i></i><i></i></div><span>iTerm2 / 工作方式示意（不是实际界面截图）</span><button id="demo-reset" type="button">重置演示</button></div>
+        <div class="demo-layout">
+          <div class="demo-terminal"><div class="terminal-tab"><span id="demo-terminal-title">Terminal · 等待打开</span><span class="terminal-badge">SIMULATION</span></div><pre id="demo-output" aria-live="polite">欢迎来到安全演示。
+
+在右侧选择一个节点，点击「模拟打开终端」。
+再次点击同一入口，会定位而不是重新运行。
+
+所有命令都只是文字展示。
+▍</pre><div class="terminal-status"><span id="demo-instance-count">0 个模拟运行入口</span><button id="demo-disconnect" type="button" disabled>模拟连接结束</button></div></div>
+          <div class="demo-sidebar"><div class="demo-panel-heading"><strong>›_ Terminal Sidebar</strong><span>右侧工具栏</span></div><div class="demo-tree-actions"><span>示例项目</span><button id="demo-expand" type="button">全部展开</button><button id="demo-collapse" type="button">全部收起</button></div><div id="demo-tree" class="demo-tree" aria-label="演示任务层级"></div><div class="demo-node-detail"><span class="tiny-label">当前节点</span><h3 id="demo-node-title"></h3><p id="demo-node-path" class="muted"></p><label for="demo-command">本级关联终端（模拟）</label><select id="demo-command"><option value="">暂不关联</option><option value="demo-shell">本地开发 · demo-shell</option><option value="demo-ssh">远端工作区 · demo-ssh</option></select><button id="demo-open" type="button" class="primary">模拟打开终端</button><details open><summary>工作记录 · 示例</summary><p id="demo-note"></p></details></div><div id="tour-overlay" class="tour-overlay" hidden><div id="tour-scene" class="tour-scene"></div></div><div id="tour-pointer" class="tour-pointer" aria-hidden="true" hidden><span>↖</span><small>模拟点击</small></div></div>
+        </div>
+      </div>
+      <p id="demo-feedback" class="demo-feedback" role="status">试试选择“验证结果”，它也可以有自己的终端。</p>
+      <div class="cards three compact"><article><h3>第一次点击</h3><p>没有运行实例 → 创建本机终端并执行配置。</p></article><article><h3>运行中再点击</h3><p>同一命令 ID → 定位已有 pane，不发送文字。</p></article><article><h3>连接结束后点击</h3><p>运行锁释放 → 允许重新执行入口。</p></article></div>
+      <noscript><p class="callout warm">浏览器未启用 JavaScript。正文仍可阅读；交互演示、搜索、复制和格式切换需要 JavaScript。</p></noscript>
+    </section>
+
+    <section id="task-tree" class="chapter" data-title="任务层级与工作记录：目录 子任务 移动 完成 搜索">
+      <div class="section-heading"><span class="section-number">05</span><h2>按工作粒度，而不是按窗口组织</h2></div>
+      <p class="lead">项目、阶段、任务、细小步骤都可以作为节点。每个节点可以拥有自己的终端和记录。</p>
+      <div class="table-wrap"><table><thead><tr><th>你要做什么</th><th>如何操作</th><th>行为说明</th></tr></thead><tbody><tr><td>建项目目录</td><td>添加任务 → 类型选“目录 / 项目”</td><td>目录不计入待办数，没有完成复选框，但可关联终端。</td></tr><tr><td>继续细分</td><td>使用节点的添加子级操作，或新建时选“上级节点”</td><td>任务也可以有子级，不必先转成目录。</td></tr><tr><td>移动一棵树</td><td>编辑节点 → 修改“上级节点”</td><td>整个子树一起移动，不改变子级已有的终端关联。不能移动到自己的后代。</td></tr><tr><td>标记完成</td><td>勾选任务复选框</td><td>按节点独立完成，不是父级一勾全树自动完成。</td></tr><tr><td>寻找历史任务</td><td>状态筛选改为“全部”或“已完成”</td><td>默认是未完成，不要把筛选隐藏误认为数据丢失。</td></tr><tr><td>找记录或细粒度步骤</td><td>搜索任意层级或记录</td><td>可按祖先名称、节点标题和记录内容查找。</td></tr><tr><td>减少视觉干扰</td><td>逐级展开 / 收起，或“展开全部 / 收起全部”</td><td>只是显示状态；收起不会删除子级。</td></tr></tbody></table></div>
+      <h3>用记录保存“为什么”，不是保存终端输出</h3><p>展开节点的 <strong>「工作记录」</strong>，输入结论、问题或下一步，再提交。记录是手动追加的纯文本，带时间；可以随 Markdown 导出。不会自动抓取终端历史，也不会执行记录中的命令。</p>
+      <blockquote class="note-example"><span>一条有用的工作记录</span><p>本地检查已通过。下一步：在测试主机验证中文输出；确认无误后再复用同一个入口。</p></blockquote>
+      <div class="callout"><strong>父级与子级的关联互相独立。</strong><p>移动节点不会自动继承父级终端。你可以让多个节点明确关联同一个入口，也可以为一个很细的步骤创建独立入口。当前界面没有拖拽排序、回收站或单条记录删除按钮。</p></div>
+    </section>
+
+    <section id="terminals" class="chapter" data-title="终端入口与关联：编辑 删除 ID URL 复用 保存不执行">
+      <div class="section-heading"><span class="section-number">06</span><h2>终端入口，是一份可复用的启动配置</h2></div>
+      <p class="lead">保存一个入口，不等于马上打开终端。关联一个入口，也不等于建立 SSH 连接。</p>
+      <div class="cards three"><article class="info-card"><span class="card-index">MODE 01</span><h3>SSH + tmux</h3><p>选择主机、session、可选 window。适合已存在会话，或希望打开时按条件创建。</p></article><article class="info-card"><span class="card-index">MODE 02</span><h3>SSH 远端多行指令</h3><p>为同一远端编写启动脚本。适合显式设置环境、切换目录等高级场景。</p></article><article class="info-card"><span class="card-index">MODE 03</span><h3>本地 Shell 脚本</h3><p>在本机通过 zsh 执行。可以填写本地工作目录，不经过 SSH。</p></article></div>
+      <h3>新建 / 编辑时，关注这些字段</h3><ul><li><strong>入口名称：</strong>给自己看的标签，可以修改。</li><li><strong>链接 ID：</strong>URL 和任务关联使用的稳定标识；新建时可留空自动生成。编辑已有入口时固定，不因改标题而换 ID。</li><li><strong>本地工作目录：</strong>是 Mac 上的目录，不是远端目录；远端目录需要在远端脚本中显式切换。</li><li><strong>启动脚本：</strong>属于可执行代码，只保存你理解并信任的内容。</li></ul>
+      <h3>不用先离开任务编辑窗口</h3><p>在“本级关联终端”下可以直接 <strong>「新建终端并关联」</strong>；选中已有入口后可 <strong>「编辑所选终端入口」</strong>。保存入口后回到原来的节点草稿，再保存任务即可。</p>
+      <div class="callout warm"><strong>修改入口不会重启正在运行的命令。</strong><p>如果它已经运行，再点只会定位。需要验证新脚本时，应安全结束旧连接，再重新打开。对于仍有工作的 tmux，可以先 detach 再连接，不要为了刷新配置去停止远端任务。</p></div>
+      <h3>四种操作，四条边界</h3><div class="table-wrap"><table><thead><tr><th>操作</th><th>写配置</th><th>连远端 / 执行</th></tr></thead><tbody><tr><td>保存任务 / 保存入口</td><td>是</td><td>否</td></tr><tr><td>读取 SSH 候选列表</td><td>否</td><td>否，只读本机配置</td></tr><tr><td>查询远端 tmux</td><td>不创建入口</td><td>是，发起只读 SSH 查询</td></tr><tr><td>打开入口 / 确认现在创建 session</td><td>取决于操作</td><td>是，属于明确执行操作</td></tr></tbody></table></div>
+      <p>同一个命令 ID 才按受管理实例复用。多个不同 ID 即使配置了相同 tmux session，也可能各自打开本机终端。运行锁存在却找不到原 pane 时，程序会拒绝重复执行，而不是擅自接管其他窗口。</p>
+    </section>
+
+    <section id="ssh-tmux" class="chapter" data-title="SSH 与 tmux：主机配置 Include 查询 新建 session window UTF-8">
+      <div class="section-heading"><span class="section-number">07</span><h2>从主机别名，连接到工作现场</h2></div>
+      <p class="lead">先分清：SSH 主机是“去哪台机器”，tmux session 是“进入哪组远端会话”。</p>
+      <div class="identity-strip"><div><span>命令入口 ID</span><code>demo-ssh</code></div><b>→</b><div><span>SSH 主机别名</span><code>demo-dev</code></div><b>→</b><div><span>tmux session</span><code>workspace</code></div><b>→</b><div><span>可选 window</span><code>build</code></div></div>
+      <h3>从本机 config 选择</h3><ol class="plain-steps"><li>新建或编辑 SSH / tmux 入口时，打开“从本机 SSH 配置选择”。</li><li>选择一个别名，主机字段会自动填入；不会自动连接，也不会自动选第一台机器。</li><li>刚改过 <code>~/.ssh/config</code>？点“重读 SSH 配置”。已填写的主机不会被覆盖。</li><li>列表没有你的目标时，仍可手动填写别名或 <code>user@host</code>。</li></ol>
+      <div class="code-block"><div class="code-heading"><span>虚构配置，仅用于理解语法</span><button type="button" data-copy="ssh-example">复制</button></div><pre id="ssh-example"><code>Host demo-dev
+    HostName dev.example.invalid
+    User demo</code></pre></div>
+      <p class="caption">不要原样连接：<code>.invalid</code> 是示例地址。按你自己的服务器信息，在本机维护 SSH 配置和凭据；本工具不会替你写入它们。</p>
+      <details><summary>为什么 config 里有，候选列表里却没有？</summary><p>列表是安全的静态子集：读取具体 Host 别名和受支持的静态 Include，排除通配符、否定模式；不执行 Match exec、ssh -G 或 ProxyCommand。Match 条件下的 Include、动态变量等可能缺失。它不是完整的 OpenSSH 配置解释器；真正连接仍由系统 SSH 解析。</p><p>解析器有限额：递归深度 12、最多 128 文件、单文件 256 KiB、总读取预算 1 MiB。异常时显示提示，手动输入仍可用。</p></details>
+      <h3>已存在的 session：直接 attach</h3><p>选择主机，填写 session 名称。普通向导生成的核心行为如下；<code>-u</code> 用于明确 UTF-8 客户端模式：</p>
+      <div class="code-block"><div class="code-heading"><span>示意 · 需要替换为真实主机和会话</span><button type="button" data-copy="tmux-example">复制</button></div><pre id="tmux-example"><code>ssh -t demo-dev 'tmux -u a -t workspace'</code></pre></div>
+      <h3>还不存在的 session：两种明确选择</h3><div class="cards two"><article class="info-card"><h4>打开时若不存在则创建</h4><p>在向导勾选对应选项。保存只记录条件创建脚本；直到点击打开才检查 / 创建并连接。</p></article><article class="info-card"><h4>现在创建远端 session</h4><p>触发创建操作后核对主机和名称，在确认框明确确认。这会立即在服务器创建后台 tmux session。</p></article></div>
+      <p>填写 window 时，向导会生成选择窗口所需的附加脚本；相应创建选项需明确选择。session / window 名称限字母、数字、下划线和短横线，且不能以短横线开头。工具不会关闭或重命名现有 session，也不用 <code>attach -d</code> 踢掉其他客户端。</p>
+      <h3>查询远端为什么可能失败？</h3><p>“查询远端”不是纯本机动作，它会发起 SSH，但使用 <code>BatchMode=yes</code>，不弹密码或首次主机信任确认。应先在普通终端完成身份与主机校验。查询默认 tmux socket，不支持向导配置自定义 <code>-L</code> / <code>-S</code>；高级场景需要完整脚本。</p>
+      <p class="reference-link">外部技术参考（联网打开）：<a href="https://man.openbsd.org/ssh_config" target="_blank" rel="noopener noreferrer">OpenSSH 配置手册 ↗</a> · <a href="https://man.openbsd.org/tmux" target="_blank" rel="noopener noreferrer">tmux 手册 ↗</a>。以目标机器实际版本为准。</p>
+    </section>
+
+    <section id="markdown" class="chapter" data-title="Markdown 导入导出：阅读版 回导 ID 文件选择 预览 记录">
+      <div class="section-heading"><span class="section-number">08</span><h2>漂亮地读，准确地改回来</h2></div>
+      <p class="lead">两种都是 Markdown。区别不是“能不能读”，而是有没有保留精确往返所需的身份信息。</p>
+      <div class="markdown-lab"><div class="markdown-toolbar"><div class="segmented" role="group" aria-label="示例 Markdown 格式"><button id="format-pretty" type="button" aria-pressed="true" data-format="pretty">阅读版</button><button id="format-roundtrip" type="button" aria-pressed="false" data-format="roundtrip">可回导版</button></div><button type="button" data-copy="markdown-source">复制示例</button><a id="markdown-download" href="examples/tasks.md" download>下载 .md ↓</a></div><p id="markdown-explanation" class="markdown-explanation" aria-live="polite">阅读版：标准缩进与复选框，适合阅读分享；改名或移动后不保证精确匹配原节点。</p><div class="markdown-columns"><div class="markdown-rendered"><span class="tiny-label">阅读效果 · 两种格式相近</span><h3>示例项目 Alpha</h3><ul><li>☐ 检查本地环境 <span class="link-chip">终端 ↗</span><blockquote>这是一条虚构记录。<br>点击本地示例只输出一行文字，不访问服务器。</blockquote><ul><li>☐ 观察终端输出</li></ul></li><li>☐ 连接示例工作区 <span class="link-chip">终端 ↗</span></li></ul><h3>示例发布检查</h3><ul><li>☐ 整理检查清单<ul><li>☑ 核对示例不包含真实数据</li></ul></li></ul><small>缩略示意；右侧源码和下载文件为完整示例。</small></div><pre id="markdown-source" tabindex="0" aria-label="完整 Markdown 示例源码">示例正在加载。也可直接下载 examples/tasks.md 阅读。</pre></div></div>
+      <h3>导出：选格式，再选文件位置</h3><ol class="plain-steps"><li>点真实侧栏底部 <strong>「导出 Markdown」</strong>。</li><li>选择“清爽层级 Markdown”或“可回导 Markdown”。需要改名、移动后再导入，优先选回导版。</li><li>检查阅读预览；展开“查看 Markdown 源码”可查看具体内容。</li><li>点 <strong>「选择文件位置并保存…」</strong>，或保存到默认目录，也可复制 Markdown。</li></ol><p>取消系统保存对话框不会写文件。导出使用不覆盖策略，已有同名文件会拒绝；选择新文件名。预览之后若任务变更，需要重新生成预览再保存。</p>
+      <h3>导入：先看到影响，再确认</h3><div class="workflow short"><div><b>1</b><strong>选择文件 / 粘贴</strong><small>或读取当前 TODO.md</small></div><span>→</span><div><b>2</b><strong>预览变更</strong><small>新增、更新、未知入口</small></div><span>→</span><div><b>3</b><strong>确认导入</strong><small>只更新任务，不执行</small></div></div>
+      <div class="callout warm"><strong>导入不是“以文件替换整个任务库”。</strong><p>文件中没出现的节点会保留，不会因为你删了 Markdown 中的一行就删掉真实任务。需要删除时，请在 UI 显式确认。但文件中出现的节点字段会更新：省略终端链接会解除关联；回导格式中的记录按文件替换，删掉记录内容会清空对应记录。</p></div>
+      <div class="table-wrap"><table><thead><tr><th>编辑意图</th><th>推荐做法</th><th>注意</th></tr></thead><tbody><tr><td>改节点名称</td><td>保留回导版 <code>ts-node</code> 中的 ID，只改文字</td><td>阅读版按完整名称路径匹配，改名可能新增节点。</td></tr><tr><td>移动子树</td><td>保留 ID，修改整棵子树的缩进</td><td>先在预览确认新父级，不重复使用 ID。</td></tr><tr><td>编辑记录</td><td>记录放在所属节点之后、子节点之前</td><td>保留 <code>ts-note</code> 的 ID / 时间可准确往返。</td></tr><tr><td>关联终端</td><td>使用 <code>[终端](terminal-jump://open/入口ID)</code></td><td>未知入口会提示，不会自动创建命令。</td></tr><tr><td>旧文件回导</td><td>先导出当前版本、认真核对预览</td><td>不是三方合并，旧内容可能覆盖同 ID 的新内容。</td></tr></tbody></table></div>
+      <details><summary>多大的 Markdown 可以导入？</summary><p>网页文件选择限制约 240 KB，HTTP JSON 请求上限 256 KiB；转义后的请求也要满足限制。单次最多 5000 个节点，标题 300 字符、单条记录 20000 字符。大文档应拆分。能导出的大文件不代表一定能一次导回。</p></details>
+      <details><summary>为什么普通段落或代码块没有变成任务？</summary><p>解析器面向标题、列表缩进、任务框、终端链接和记录引用，不是任意 Markdown 到任务的转换器。普通段落和围栏代码会忽略；导入它们不会执行命令。</p></details>
+    </section>
+
+    <section id="obsidian" class="chapter" data-title="Obsidian 与 URL 跳转：terminal-jump 链接 TODO 手动同步">
+      <div class="section-heading"><span class="section-number">09</span><h2>把入口放在你已经使用的笔记里</h2></div>
+      <p class="lead">Obsidian 负责写作，Sidebar 负责组织，Terminal Jump 负责把你带回终端。</p>
+      <div class="code-block"><div class="code-heading"><span>笔记中的 Markdown 链接</span><button type="button" data-copy="url-example">复制</button></div><pre id="url-example"><code>[打开开发终端](terminal-jump://open/demo-ssh)</code></pre></div>
+      <p>先在本机创建 ID 为 <code>demo-ssh</code> 的入口，再把链接放入笔记。点击链接由 macOS 交给 Terminal Jump，查找本机配置并创建 / 定位终端；笔记软件可能要求确认打开外部应用。网站示例不会直接触发这类协议链接。</p>
+      <div class="callout"><strong>URL 携带的是 ID，不是任意命令。</strong><p>把链接发给另一台电脑，不会顺带迁移 SSH 凭据、脚本和任务。另一台电脑需要安装应用、配置同 ID 的入口，且具备自己的 SSH 登录环境。不要分享本地网页服务地址中包含的访问令牌。</p></div>
+      <h3>指定自己的 TODO / Obsidian 文件</h3><p>在应用发布包目录安装时显式指定路径：</p><div class="code-block"><div class="code-heading"><span>示例路径 · 按自己的 vault 修改</span><button type="button" data-copy="todo-install">复制</button></div><pre id="todo-install"><code>python3 install.py --todo "$HOME/Documents/My Notes/TODO.md"</code></pre></div>
+      <p>已有文件内容不会覆盖。这个参数设置“读取当前 TODO.md”的来源和默认导出目录，<strong>不是实时双向同步</strong>。默认升级不传这个参数时保留原路径。全新安装默认来源为 <code>~/Documents/Terminal Workspace/TODO.md</code>。</p>
+      <h3>推荐的手动往返</h3><ol class="plain-steps"><li>在侧栏导出可回导版，保存到笔记目录，使用新文件名。</li><li>在 Obsidian 编辑文字、缩进和记录，保留隐藏的 ID 注释。</li><li>回侧栏选择该文件 → 预览 → 确认。不要同时在两边编辑同一节点后盲目覆盖。</li><li>要分享漂亮版本时再导出阅读版；它不适合充当完整备份。</li></ol>
+    </section>
+
+    <section id="deletion" class="chapter" data-title="删除 备份 恢复：删除本级 子树 终端入口 不关闭tmux">
+      <div class="section-heading"><span class="section-number">10</span><h2>先看清影响范围，再删除</h2></div>
+      <p class="lead">删除任务、删除命令入口、停止远端会话，是三件完全不同的事。</p>
+      <div class="delete-lab"><div class="delete-lab-top"><strong>删除范围演示</strong><label for="delete-mode">选择操作<select id="delete-mode"><option value="node">只删除“发布阶段”，保留子级</option><option value="subtree">删除“发布阶段”及全部子级</option></select></label></div><div class="delete-comparison"><div><span class="tiny-label">原来的树</span><pre>示例项目
+├ 发布阶段
+│ ├ 核对清单
+│ └ 验证结果
+└ 日常维护</pre></div><span aria-hidden="true">→</span><div><span class="tiny-label">确认后的示意</span><pre id="delete-preview">示例项目
+├ 核对清单
+├ 验证结果
+└ 日常维护</pre></div></div><p id="delete-impact" role="status">移除 1 个节点及它自己的记录，两个子级上移。这里只改变示意图，不删除真实内容。</p></div>
+      <div class="table-wrap"><table><thead><tr><th>真实操作</th><th>会移除什么</th><th>不会做什么</th></tr></thead><tbody><tr><td>删除本级，保留子级</td><td>本级节点及其记录；直接子级上移</td><td>不会删终端入口或改子级终端关联</td></tr><tr><td>删除本级及所有子级</td><td>整棵子树及全部记录</td><td>不会修改原始 TODO 或历史导出文件</td></tr><tr><td>删除终端入口</td><td>两版共享的命令配置项</td><td>不会关闭已打开的终端、删除任务或远端 tmux</td></tr></tbody></table></div>
+      <p>任务删除需要在编辑窗口点“删除此节点…”，检查范围、数量及受影响列表后确认。删除入口在“终端入口”页操作，先核对关联数量；原任务关联和外部 URL 会失效，需要重新关联或重新创建同 ID。</p>
+      <h3>误删后的正确顺序</h3><ol class="plain-steps"><li>停止继续修改，先保留当前数据，避免二次覆盖。</li><li>有效任务删除前有独立备份 <code>tasks.pre-delete-*.json</code>；另有最近修改前的 <code>tasks.json.bak</code>。</li><li>优先从备份提取所需节点。整库回滚会丢掉备份之后的修改，不能当作普通撤销。</li><li>确需整库恢复时，先停服务、备份当前库，检查 JSON 与命令关联后再替换。不了解结构时交给维护者处理。</li></ol>
+      <div class="callout warm"><strong>不要用示例 JSON 覆盖活动数据，也不要用 kill-server“清理”侧栏。</strong><p>本工具没有回收站或一键撤销；网页的删除示意不是恢复工具。远端任务不属于侧栏清理范围。</p></div>
+    </section>
+
+    <section id="migration" class="chapter" data-title="升级与换电脑：迁移 绝对路径 SSH 凭据 数据备份">
+      <div class="section-heading"><span class="section-number">11</span><h2>把工具带走，不把旧电脑路径带走</h2></div>
+      <p class="lead">“在新 Mac 安装”和“迁移自己的工作数据”要分开处理。</p>
+      <div class="cards two"><article class="info-card"><span class="card-index">INSTALL</span><h3>只安装工具</h3><p>带源码 ZIP，在新 Mac 准备环境、解压、运行 Install.command。安装器使用新机器的 HOME 和 Python 路径；不需要旧用户名或目录。</p></article><article class="info-card"><span class="card-index">MIGRATE</span><h3>继续原来的工作</h3><p>还需要安全迁移任务与命令，并在新机器配置 SSH、重新授权。发布 ZIP 只有虚构示例，不包含你的工作内容。</p></article></div>
+      <h3>推荐：可检查的手动迁移</h3><ol class="steps"><li><h3>在旧机器留一份备份</h3><p>导出可回导 Markdown。另行保留任务 JSON 和共享命令配置的安全备份；不要将其放进公开的发行包。</p></li><li><h3>在新机器重新安装</h3><p>不要直接复制旧 App、venv 或 runtime 缓存。启动路径与解释器会在新机器重新生成，首次授权也要重新完成。</p></li><li><h3>先重建 / 审核命令与 SSH</h3><p>为关联入口保留同样的命令 ID。逐条检查本地 cwd、脚本中的绝对路径、主机别名和远端目录；个人脚本仍可能绑定旧环境。</p></li><li><h3>预览导入任务</h3><p>选择回导 Markdown，核对更新与未知命令提示，再确认。先用安全的本地测试入口验证，不要把生产任务用来做安装测试。</p></li></ol>
+      <details><summary>熟悉数据结构，想做完整 JSON 迁移？</summary><p>在两边停止 Sidebar、备份目标机器已有库，再检查和迁移 <code>tasks.json</code> 与 <code>commands.json</code>。只有在目标为空、结构兼容且你理解替换影响时才做整库复制；它不是合并操作。不要覆盖新机器的运行令牌 / runtime / venv；设置中的 TODO 路径按新环境重设。</p></details>
+      <h3>同一台电脑升级</h3><p>解压新版，再双击安装入口。默认保留已有 Terminal Jump App、任务、命令、令牌和 TODO 路径；更新 Sidebar 本机服务，不关闭 SSH / tmux 终端。需要显式重编译 V1 时，在应用包目录用 <code>python3 install.py --upgrade-launcher</code>。</p>
+      <div class="callout warm"><strong>没有承诺“任何 Mac 零环境、零报错”。</strong><p>已做源码与隔离流程验证，但不是完整的新机、所有系统版本与架构兼容矩阵。专用 venv 若是旧 Python 创建的，需要先停服务，将旧 venv 重命名保留，再用受支持 Python 安装；不要删任务目录来解决依赖问题。</p></div>
+    </section>
+
+    <section id="troubleshooting" class="chapter" data-title="常见问题与排错：中文不显示 HOME zshrc tmux 查询失败 面板打不开">
+      <div class="section-heading"><span class="section-number">12</span><h2>先定位哪一层，再解决问题</h2></div>
+      <p class="lead">界面 → 本机服务 → iTerm2 → SSH → tmux。别把每个失败都归到同一个地方。</p>
+      <div class="troubleshooting-list">
+        <details><summary>App 打开了，右侧没有任务面板</summary><ol><li>检查 iTerm2 Python API 已启用，并批准首次连接。</li><li>运行 <code>~/.local/bin/terminal-sidebar status</code> 查看本机服务。</li><li>运行 <code>~/.local/bin/terminal-sidebar open</code> 再注册 / 展示。</li><li>可先用 <code>~/.local/bin/terminal-sidebar browser</code> 验证网页服务；能打开网页不代表 iTerm2 授权也正常。</li></ol><p>不要公开浏览器中的私有服务 URL，其中含访问令牌。</p></details>
+        <details><summary>“查询远端”失败，但我手动 SSH 能登录</summary><p>后台查询不交互，普通登录可能依赖密码、首次信任确认或只在交互 shell 中设置的 PATH。先用普通终端完成可信主机校验与认证配置，再检查非交互环境能否找到 tmux。也核对主机、远端用户及默认 socket 是否一致。查询有连接与进程超时；不要绕过 host key 校验来修复。</p></details>
+        <details><summary>为什么普通 ssh 会读取环境，一键连接却不一样？</summary><p><code>ssh host</code> 通常进入交互式登录 shell；<code>ssh -t host 'command'</code> 则请求远端执行命令。分配 TTY 不等于强制读取交互配置。zsh 的交互设置通常在 <code>.zshrc</code>，基础环境可按需放在 <code>.zshenv</code>；还要核对 ZDOTDIR 和启动选项。不同 shell 按自身规则处理。</p><p>优先在入口里显式设置必需环境，或由你维护账户级环境配置，不要自动修改共享 root 的启动文件。<a href="https://zsh.sourceforge.io/Doc/Release/Files.html" target="_blank" rel="noopener noreferrer">zsh 启动文件说明 ↗</a></p></details>
+        <details><summary>脚本里写了 zsh，为什么后面的 tmux 没执行？</summary><p>单独启动交互 zsh 后，父脚本要等它退出才继续，所以后面的 tmux 没机会立刻运行。不要把 <code>zsh</code> 单独放在 tmux 前；把必需的环境设置与 tmux 放在同一段明确的远端脚本中。若刻意调用 shell，需清楚选择执行模式。</p></details>
+        <details><summary>设置 HOME 后仍在原目录；应该改服务器哪里？</summary><p><code>export HOME=...</code> 只改变环境变量，不自动切换目录。需要时显式 <code>cd</code>，并检查账户真实 HOME、权限与 ZDOTDIR。先用入口级脚本验证；如果要变成默认行为，应由账户所有者或管理员按服务器规范设置，不要盲目改共享账户或复制别人的路径。安装器不会修改远端启动文件。</p></details>
+        <details><summary>中文在手动终端正常，点击入口却不显示</summary><p>先核对入口包含 <code>tmux -u</code>；还要比较远端 locale、实际 tmux 客户端的 UTF-8 状态、终端字体与程序编码，不能只看 pane 里的 LANG。修改入口不会刷新已有连接：安全 detach 后重新打开，保留远端任务，不需要 kill-server。</p></details>
+        <details><summary>改了启动命令，再点击为什么没变化？</summary><p>受管理入口仍在运行时，再次点击只定位，不重跑。安全结束旧连接后再次点击。若出现“找不到原 pane”而拒绝重复执行，先确认原任务状态，不要随意删运行锁来强制重启。</p></details>
+        <details><summary>保存或导入提示内容已变化 / 版本过期</summary><p>其他窗口、V1 或 CLI 可能更新了任务 / 命令。刷新，重新核对内容并生成预览再保存。这是防覆盖保护，不应通过手工篡改 revision 绕过。</p></details>
+        <details><summary>导出保存窗口没出现，或者提示文件已存在</summary><p>切到前台检查系统对话框，也可以使用“保存到默认目录”。已有同名文件不会被覆盖，请换文件名。取消对话框不写文件；确认导出完成前不要删除源数据。</p></details>
+        <details><summary>任务不见了 / Markdown 导入后出现重复节点</summary><p>先把状态筛选改成“全部”，清空搜索并展开树。阅读版没有稳定 ID，改名或移动后可能被认为是新节点；需要精确往返时使用可回导版并保留 ID。旧文件回导可能覆盖新内容，务必先预览。</p></details>
+      </div>
+    </section>
+
+    <section id="reference" class="chapter" data-title="命令行与数据位置：CLI start stop export import tasks config settings">
+      <div class="section-heading"><span class="section-number">13</span><h2>不经过界面，也可以工作</h2></div>
+      <p class="lead">可执行文件在 <code>~/.local/bin/</code>。没有加入 PATH 时，使用这里的完整写法。</p>
+      <div class="table-wrap"><table><thead><tr><th>命令</th><th>行为</th></tr></thead><tbody><tr><td><code>~/.local/bin/terminal-sidebar status</code></td><td>查看服务是否运行。</td></tr><tr><td><code>~/.local/bin/terminal-sidebar start</code></td><td>启动本机网页服务。</td></tr><tr><td><code>~/.local/bin/terminal-sidebar open</code></td><td>启动服务并展示 iTerm2 侧栏。</td></tr><tr><td><code>~/.local/bin/terminal-sidebar browser</code></td><td>在浏览器打开私有任务面板，不是本说明网站。</td></tr><tr><td><code>~/.local/bin/terminal-sidebar stop</code></td><td>停止侧栏服务，不停止 V1 或远端 tmux。</td></tr><tr><td><code>~/.local/bin/terminal-jump list</code></td><td>列出本机共享命令。</td></tr><tr><td><code>~/.local/bin/terminal-jump open demo-shell</code></td><td>明确执行 / 定位 demo-shell 入口。</td></tr></tbody></table></div>
+      <div class="code-block"><div class="code-heading"><span>手动导出 / 导入 · 最后一条会写入任务库</span><button type="button" data-copy="cli-markdown">复制</button></div><pre id="cli-markdown"><code>~/.local/bin/terminal-sidebar export output.md
+~/.local/bin/terminal-sidebar export roundtrip.md --format roundtrip
+~/.local/bin/terminal-sidebar import input.md
+~/.local/bin/terminal-sidebar import input.md --apply</code></pre></div>
+      <p><code>import</code> 默认只预览；带 <code>--apply</code> 才写入。执行时重新计算变更；CLI 更新之后，已打开的网页需要刷新。请逐条理解后执行，不要把这一组命令当作自动安装脚本。</p>
+      <h3>重要文件在哪里</h3><div class="table-wrap"><table><thead><tr><th>路径</th><th>内容</th></tr></thead><tbody><tr><td><code>~/.config/terminal-jump/commands.json</code></td><td>两个 App 共用的命令配置</td></tr><tr><td><code>~/.config/terminal-sidebar/tasks.json</code></td><td>任务 / 记录的权威数据</td></tr><tr><td><code>~/.config/terminal-sidebar/tasks.pre-delete-*.json</code></td><td>每次有效删除前的独立备份</td></tr><tr><td><code>~/Library/Application Support/Terminal Sidebar/settings.json</code></td><td>TODO 来源设置</td></tr><tr><td><code>~/Library/Application Support/Terminal Sidebar/</code></td><td>运行源码和专用 venv，不等于任务库</td></tr><tr><td><code>~/Library/Caches/terminal-sidebar/runtime.json</code></td><td>本机服务运行状态，含私密信息，不分享</td></tr><tr><td><code>~/.ssh/config</code></td><td>你的 SSH 配置；工具只读候选，不替你维护</td></tr></tbody></table></div>
+      <p>接口、锁、两种 revision、原子写入及更完整的路径列表见 <a href="reference/HANDOFF.md" download>HANDOFF.md</a>。HTTP API 是本机私有接口，不是承诺稳定的公共 SDK。</p>
+    </section>
+
+    <section id="resources" class="chapter" data-title="示例 交接 维护 网站源码 下载 安全边界">
+      <div class="section-heading"><span class="section-number">14</span><h2>可带走的示例，可交接的说明</h2></div>
+      <p class="lead">这里的文件全部来自干净发行资料或合成示例。不包含真实账户、任务、SSH 配置和访问令牌。</p>
+      <div class="resource-grid"><a href="reference/INSTALL.md" download><span>INSTALL</span><strong>详细安装说明</strong><small>依赖、授权、升级、卸载 ↓</small></a><a href="reference/HANDOFF.md" download><span>HANDOFF</span><strong>完整交接文档</strong><small>定义、数据模型、接口与边界 ↓</small></a><a href="reference/TESTING.md" download><span>VALIDATION</span><strong>验证范围</strong><small>已测内容、限制与复测建议 ↓</small></a><a href="examples/README.md" download><span>EXAMPLES</span><strong>示例使用步骤</strong><small>安全导入、练习修改与清理 ↓</small></a><a href="examples/tasks.md" download><span>MARKDOWN</span><strong>层级阅读版</strong><small>适合查看与分享 ↓</small></a><a href="examples/tasks.roundtrip.md" download><span>ROUNDTRIP</span><strong>保留 ID 的任务示例</strong><small>练习改名、层级和记录往返 ↓</small></a><a href="examples/commands.example.json" download><span>SCHEMA</span><strong>命令结构示例</strong><small>只作参考，不覆盖活动配置 ↓</small></a><a href="examples/tasks.example.json" download><span>SCHEMA</span><strong>任务结构示例</strong><small>虚构节点与记录 ↓</small></a><a href="examples/ssh-config.example" download><span>SSH</span><strong>主机配置示例</strong><small>虚构地址，不用于真实连接 ↓</small></a></div>
+      <h3>想改功能，先找到对应文件</h3><div class="table-wrap"><table><thead><tr><th>改什么</th><th>从哪里开始</th></tr></thead><tbody><tr><td>侧栏界面、弹窗、树</td><td><code>terminal-sidebar/static/</code></td></tr><tr><td>任务存储、HTTP 路由、tmux 向导</td><td><code>terminal-sidebar/sidebar.py</code></td></tr><tr><td>Markdown 解析与导出</td><td><code>terminal-sidebar/markdown_io.py</code></td></tr><tr><td>SSH 候选读取</td><td><code>terminal-sidebar/ssh_config.py</code></td></tr><tr><td>链接打开、终端复用</td><td><code>terminal-jump/terminal_jump.py</code></td></tr><tr><td>原生编辑器</td><td><code>terminal-jump/TerminalJump.swift</code></td></tr><tr><td>本说明网站</td><td><code>site/index.html</code>、<code>site/styles.css</code>、<code>site/app.js</code> 与 <code>build_guide.py</code></td></tr></tbody></table></div>
+      <div class="callout"><strong>维护时也要保留执行边界。</strong><p>不要把执行命令藏在“读取状态”“导入”“选择主机”或“保存”里。新增字段先定义兼容规则，再测试 revision 和原子写入。更改源码后，还要核对安装目录里的运行副本；破坏性测试只用临时数据。</p></div>
+      <h3>说明网站本身怎么使用</h3><p>解压说明网站 ZIP，双击根目录的 <code>index.html</code> 即可离线阅读；保持同目录资源完整。可搜索、展开演示、切换 Markdown、复制示例及打印为 PDF。文件链接只下载你明确选择的示例，不会自动导入应用。</p><p>这是静态网站，也可以放到你自己的静态站点托管目录；无需后端、数据库或构建框架。目前交付的是本地网站，未替你部署公共域名。发布时只上传这份网站文件夹，不上传任务库或工作目录。</p>
+      <p class="reference-link">外部平台参考：<a href="https://iterm2.com/python-api/tool.html" target="_blank" rel="noopener noreferrer">iTerm2 Toolbelt 网页 API ↗</a>。本手册描述的是本工具 1.0.0 行为，不承诺其他版本相同。</p>
+    </section>
+    <footer class="site-footer"><a class="brand" href="#overview"><span class="brand-mark" aria-hidden="true">›_</span> Terminal Workspace</a><p>使用手册 · 对应发行版 1.0.0 · 2026-09-20<br>只讲工具与虚构示例，不携带你的工作数据。</p><a href="#overview">回到顶部 ↑</a></footer>
+  </main>
+  <div id="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

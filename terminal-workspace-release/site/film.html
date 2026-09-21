@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="不用读长文，直接看 Terminal Workspace 自动演示任务层级、SSH / tmux、终端关联与复用、Markdown 和安全删除。纯网页模拟，不操作真实应用。">
+  <meta name="referrer" content="no-referrer">
+  <title>Terminal Workspace · 产品短片</title>
+  <link rel="stylesheet" href="cinema.css">
+  <script src="cinema.js" defer></script>
+</head>
+<body>
+  <header class="site-header"><a class="logo" href="index.html"><span>›_</span> Terminal Workspace</a><div><span class="local-badge">● 纯网页模拟</span><a href="manual.html">完整手册 ↗</a></div></header>
+  <main>
+    <div class="intro"><div><p class="eyebrow">YOUR WORK. ONE CLICK AWAY.</p><h1>点一下，<span>回到工作现场。</span></h1></div><p>任务有层级，终端有归处。<br>用 32 秒，看懂一套工作方式。</p></div>
+    <section id="cinema" class="cinema" aria-label="Terminal Workspace 自动演示播放器">
+      <div class="film-header"><div class="film-label"><span class="live-dot"></span><strong id="film-name">THE WORKFLOW / 32s</strong><span id="playing-status">自动播放</span></div><div><button id="back-main" type="button" hidden>↶ 返回主片</button><span class="safe-label">纯网页模拟</span><button id="fullscreen" type="button" aria-label="全屏观看">⛶</button></div></div>
+      <div class="show-layout">
+        <nav class="chapters" aria-label="跳转到演示功能"><span class="chapters-heading">THE WORKFLOW</span><div id="chapter-list"></div><a href="manual.html">需要细节？查手册 ↗</a></nav>
+        <div class="screen-area">
+          <div id="stage" class="stage" aria-label="模拟应用画面">
+            <div id="camera" class="camera">
+            <div class="app-titlebar"><span class="traffic"><i></i><i></i><i></i></span><span id="app-title">iTerm2 · Terminal Workspace</span><span class="app-titlebar-end">⌘ 1</span></div>
+            <div class="app-content">
+              <div class="terminal"><div class="terminal-tabs"><span id="terminal-tab">zsh — 工作终端</span><span>＋</span></div><div id="terminal-output" class="terminal-output"></div><div id="terminal-banner" class="terminal-banner" hidden></div><div class="terminal-bottom"><span id="terminal-state">LOCAL / READY</span><span>UTF-8</span></div></div>
+              <aside class="sidebar"><div class="sidebar-brand"><strong>›_ Terminal Sidebar</strong><span>V2</span></div><div class="toolbar"><span id="add-task" class="fake-button accent">＋ 添加任务</span><span id="add-command" class="fake-button">＋ 终端</span><span id="refresh" class="fake-button icon-button">↻</span></div><div class="tabs"><span id="tasks-tab" class="active">任务 <b>4</b></span><span id="commands-tab">终端入口 <b>2</b></span></div><div class="filter-row"><span id="search-box">⌕ 搜索任意层级或记录</span><span id="status-filter">未完成 ⌄</span></div><div class="tree-tools"><small>多级任务树</small><span id="expand-all">展开全部</span><span id="collapse-all">收起全部</span></div><div id="workspace-list" class="workspace-list"></div><div id="notes-panel" class="notes-panel" hidden><strong>▾ 工作记录</strong><div id="note-content"></div><div id="note-input" class="note-input">记录结论与下一步…</div><span id="save-note" class="fake-button accent">添加记录</span></div><div class="sidebar-bottom"><span id="import-button">导入 Markdown</span><span id="export-button">导出 Markdown</span><span id="v1-button">打开第一版</span></div></aside>
+            </div>
+            <div id="modal-layer" class="modal-layer" hidden><div id="modal" class="modal"><div class="modal-top"><span id="modal-tag">TASK</span><span>×</span></div><h2 id="modal-title"></h2><div id="modal-content"></div><div id="modal-hint" class="modal-hint"></div><div id="modal-action" class="modal-action"></div></div></div>
+            <div id="scene-toast" class="scene-toast" hidden><span>✓</span><span id="scene-toast-text"></span></div>
+            <div id="cursor" class="cursor" aria-hidden="true"><svg width="28" height="34" viewBox="0 0 28 34"><path d="M3 2L23 21L14 22L10 31L3 2Z" fill="white" stroke="#14241e" stroke-width="1.8" stroke-linejoin="round"/></svg><span>DEMO</span></div>
+            <div id="click-ring" class="click-ring" aria-hidden="true"></div>
+            </div>
+            <div id="comparison" class="comparison" hidden><div class="comparison-heading"><span>FROM WORKSPACE TO WORDS</span><h2>工作现场，也能带走。</h2></div><div class="comparison-cards"><div class="compare-before"><span>工作台里的层级</span><h3>▾ Atlas 项目</h3><p>└ 核对清单</p><p class="nested">☑ 验证中文输出 <b>›_</b></p><blockquote>UTF-8 验证通过。</blockquote></div><span class="compare-arrow">→</span><div class="compare-after"><span>Markdown 里的记录</span><h3>Atlas 项目</h3><pre>- [ ] 核对清单
+  - [x] 验证中文输出
+    &gt; UTF-8 验证通过。</pre><small>阅读版分享 · 保留 ID 的版本可回导</small></div></div><p class="comparison-note">手动导出，不是自动同步。</p></div>
+            <div id="shot-label" class="shot-label" aria-hidden="true">01 / ORGANIZE</div>
+            <div class="simulation-watermark">SIMULATED INTERFACE / NO REAL ACTIONS</div>
+          </div>
+          <div class="narration"><div><span id="scene-number">01</span><span class="narration-divider"></span><h2 id="scene-title">打开你的工作台</h2></div><p id="scene-description" aria-live="polite">纯网页模拟：所有点击只发生在这幅画面里。</p></div>
+        </div>
+      </div>
+      <div class="player-controls"><button id="play-toggle" class="play-toggle" type="button" aria-label="暂停演示">Ⅱ</button><button id="previous" type="button" aria-label="上一个功能">❮</button><button id="next" type="button" aria-label="下一个功能">❯</button><span id="elapsed">0:00</span><label class="seek-label"><span class="sr-only">演示进度</span><input id="seek" type="range" min="0" max="1000" value="0" step="1"></label><span id="duration">2:00</span><label class="speed-label"><span class="sr-only">播放速度</span><select id="speed"><option value="1">1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label><button id="replay" type="button" aria-label="重新播放">↺</button></div>
+    </section>
+    <section class="shorts" aria-label="六个功能短演示"><div class="shorts-heading"><h2>想看哪一步？</h2><span>每段只讲一件事。选择后，在上方播放。</span></div><div id="short-list" class="short-list"></div></section>
+    <footer class="page-footer"><span><i></i> 自动循环 · 空格暂停 · ← → 切换功能</span><span>不是录屏，不读取你的数据，不执行任何命令。<a href="manual.html#resources">文档与示例 ↗</a></span></footer>
+    <p id="motion-note" class="motion-note" hidden>检测到“减少动态效果”：已暂停自动播放。可手动逐步查看，或按播放继续。</p>
+    <noscript><p class="motion-note">动画需要 JavaScript。你仍可打开 <a href="manual.html">完整使用手册</a>。</p></noscript>
+  </main>
+</body>
+</html>

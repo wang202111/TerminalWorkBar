@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Terminal Sidebar · V2</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header>
+    <div class="brand"><span class="mark">›_</span><div><strong>Terminal Sidebar</strong><small>任务 · 终端 · 工作记录</small></div><span class="version">V2</span></div>
+    <div class="toolbar"><button id="new-task" class="primary">＋ 添加任务</button><button id="new-command">＋ 终端</button><button id="refresh" title="刷新任务和第一版的命令">刷新</button></div>
+  </header>
+  <nav><button id="tab-tasks" class="tab active">任务 <span id="task-count">0</span></button><button id="tab-commands" class="tab">终端入口 <span id="command-count">0</span></button></nav>
+  <div id="notice" role="status" aria-live="polite">正在加载本地工作台…</div>
+  <main>
+    <section id="tasks-view">
+      <div class="filters"><input id="search" type="search" placeholder="搜索任意层级或记录" aria-label="搜索任务"><select id="filter" aria-label="任务状态"><option value="active">未完成</option><option value="all">全部</option><option value="done">已完成</option></select></div>
+      <div class="tree-tools"><span id="tree-count">多级任务树</span><button id="expand-all" class="plain">展开全部</button><button id="collapse-all" class="plain">收起全部</button></div>
+      <div id="tasks"></div>
+      <div id="empty" class="empty" hidden><span>✓</span><h2>没有匹配的节点</h2><p>添加目录或任务，再逐级细分。<br>每一级都可以关联终端和记录。</p><button id="import-empty">导入现有 TODO</button></div>
+    </section>
+    <section id="commands-view" hidden><p class="hint">与第一版共用命令入口。打开会复用已有终端，不向工作中的 shell 注入文本。</p><div id="commands"></div></section>
+  </main>
+  <footer><button id="import">导入 Markdown</button><button id="export">导出 Markdown</button><button id="open-v1">打开第一版</button><p>仅本机 · 保存不执行 · 第一版保持独立</p></footer>
+
+  <dialog id="task-dialog">
+    <form id="task-form">
+      <div class="dialog-head"><h2 id="task-heading">添加任务</h2><button type="button" data-close="task-dialog" class="plain">关闭</button></div>
+      <input name="id" type="hidden">
+      <label>节点名称<input name="title" required maxlength="300" placeholder="目录、大任务，或一个很细的步骤"></label>
+      <label>节点类型<select name="kind"><option value="task">任务 / 步骤（可勾选完成）</option><option value="group">目录 / 项目（不计入待办数）</option></select></label>
+      <label>上级节点<select name="parent_id"><option value="">顶层（无上级）</option></select></label>
+      <label>本级关联终端<select name="command_id"><option value="">暂不关联</option></select></label>
+      <button id="associate-new-command" type="button">＋ 新建终端并关联</button>
+      <button id="associate-edit-command" type="button">编辑所选终端入口</button>
+      <p id="association-hint" class="hint">没有合适的入口？直接新建，保存后回到这里，无需切换到终端页。</p>
+      <p class="hint">任意层级都能有自己的终端和记录，也能继续添加子级。修改「上级节点」会移动整个子树；不会改变子级的终端关联。保存不执行命令。</p>
+      <button class="primary" type="submit">保存任务</button>
+      <button id="delete-task-editor" type="button" class="danger" hidden>删除此节点…</button>
+      <p class="form-error" role="alert"></p>
+    </form>
+  </dialog>
+
+  <dialog id="command-dialog">
+    <form id="command-form">
+      <div class="dialog-head"><h2 id="command-heading">添加终端入口</h2><button type="button" data-close="command-dialog" class="plain">关闭</button></div>
+      <input name="original_id" type="hidden">
+      <label>入口名称<input name="title" required placeholder="例如 项目开发终端"></label>
+      <label>类型<select name="mode"><option value="tmux">SSH + tmux（向导）</option><option value="ssh">SSH 远端多行指令</option><option value="shell">本地 Shell 脚本</option></select></label>
+      <div id="host-fields">
+        <label>从本机 SSH 配置选择<select id="ssh-host-select"><option value="">选择配置别名（也可在下面手动输入）</option></select></label>
+        <button id="ssh-host-refresh" type="button">重读 SSH 配置</button>
+        <p id="ssh-host-status" class="hint" role="status" aria-live="polite"></p>
+        <label>SSH 主机<input name="host" placeholder="SSH 别名或 user@host"></label>
+      </div>
+      <div id="tmux-fields">
+        <div class="row"><label class="grow">tmux session<input name="session" placeholder="例如 workspace" list="session-list"><datalist id="session-list"></datalist></label><button id="list-tmux" type="button">查询远端</button></div>
+        <p id="tmux-status" class="hint" role="status" aria-live="polite">查询当前 SSH 主机的默认 tmux session，不会自动连接或创建。</p>
+        <div id="sessions" class="sessions"></div>
+        <label>tmux window（可选）<input name="window" placeholder="session 内的窗口名称；不确定请留空"></label>
+        <p class="hint">SSH 主机是服务器别名；session 是查询结果里的会话名称，两者不是同一个概念。window 只在需要指定会话内部窗口时填写。</p>
+        <label class="check"><input name="create_on_open" type="checkbox">打开时，若不存在则创建 session / window</label>
+        <button id="create-tmux" type="button" class="subtle">现在创建远端 session…</button>
+      </div>
+      <div id="script-fields" hidden><label id="script-label">执行指令<textarea name="command" rows="5" spellcheck="false" placeholder="输入多行指令"></textarea></label></div>
+      <label>链接 ID（可选）<input name="id" placeholder="留空自动生成；已有 ID 不会被覆盖" pattern="[A-Za-z0-9][A-Za-z0-9_-]{0,63}"></label>
+      <label>本地工作目录（可选）<input name="cwd" placeholder="例如 ~/Desktop；不是远端目录"></label>
+      <p id="command-edit-hint" class="hint">保存只写配置，不执行。入口与第一版共用；修改后已打开的终端不会重新执行指令。编辑时 ID 固定，保留原有链接和关联。</p>
+      <button class="primary" type="submit">保存入口，不执行</button>
+      <p class="form-error" role="alert"></p>
+    </form>
+  </dialog>
+
+  <dialog id="confirm-dialog"><div class="dialog-head"><h2>确认创建远端 session</h2></div><p id="confirm-text"></p><p class="hint">这会在服务器启动一个新的后台 tmux session。不会关闭、重命名或删除现有 session。</p><div class="row"><button id="cancel-create">取消</button><button id="confirm-create" class="primary">确认创建</button></div></dialog>
+
+  <dialog id="delete-task-dialog">
+    <div class="dialog-head"><h2>删除任务 / 目录？</h2><button type="button" data-close="delete-task-dialog" class="plain">取消</button></div>
+    <p id="delete-task-title"></p>
+    <label id="delete-task-scope-label">删除范围<select id="delete-task-scope"><option value="node">只删除本级，保留子级并上移</option><option value="subtree">删除本级及所有子级</option></select></label>
+    <p id="delete-task-impact" role="status" aria-live="polite"></p>
+    <ul id="delete-task-list"></ul>
+    <p class="hint">删除的是侧栏任务及其记录，不会删除终端入口、关闭终端或删除远端 tmux，也不会修改原始 TODO.md / 已导出的 Markdown。当前节点未保存的编辑将丢弃。删除前会保留独立备份。</p>
+    <p id="delete-task-error" class="form-error" role="alert"></p>
+    <button id="delete-task-confirm" type="button" class="danger">确认删除</button>
+  </dialog>
+
+  <dialog id="delete-command-dialog">
+    <div class="dialog-head"><h2>删除终端入口？</h2><button type="button" data-close="delete-command-dialog" class="plain">取消</button></div>
+    <p id="delete-command-title"></p>
+    <p class="hint">入口与第一版共用，删除后两边的配置都会移除。不会关闭已打开的终端，也不会删除远端 tmux、任务或记录。已有任务关联与外部 URL 会失效，可以重新关联或重新创建相同 ID。</p>
+    <p id="delete-command-count" class="hint"></p><ul id="delete-command-tasks"></ul>
+    <p id="delete-command-error" class="form-error" role="alert"></p>
+    <button id="delete-command-confirm" type="button">确认删除入口</button>
+  </dialog>
+
+  <dialog id="markdown-dialog">
+    <div class="dialog-head"><h2>导入 Markdown</h2><button type="button" data-close="markdown-dialog" class="plain">关闭</button></div>
+    <p class="hint">选择文件或粘贴内容，先预览再确认。保留导出文件中的 ID 可改名、移动层级；文件里未出现的节点不会删除。导入只更新任务，不执行或创建终端命令。</p>
+    <label>选择 Markdown 文件<input id="markdown-file" type="file" accept=".md,.markdown,text/markdown,text/plain"></label>
+    <button id="markdown-todo" type="button">读取当前 TODO.md</button>
+    <label>Markdown 内容<textarea id="markdown-input" rows="12" spellcheck="false" placeholder="# 示例项目&#10;- [ ] 任务 [终端](terminal-jump://open/demo-shell)&#10;  - [ ] 子任务&#10;    > 工作记录"></textarea></label>
+    <button id="markdown-preview" type="button">预览导入</button>
+    <div id="markdown-preview-result" aria-live="polite"></div>
+    <p id="markdown-error" class="form-error" role="alert"></p>
+    <button id="markdown-apply" type="button" class="primary" disabled>确认导入</button>
+  </dialog>
+
+  <dialog id="export-dialog">
+    <div class="dialog-head"><h2>导出 Markdown</h2><button type="button" data-close="export-dialog" class="plain">关闭</button></div>
+    <label>导出格式<select id="export-format"><option value="pretty">清爽层级 Markdown（推荐阅读）</option><option value="roundtrip">可回导 Markdown（保留 ID 和记录时间）</option></select></label>
+    <p id="export-hint" class="hint"></p>
+    <div id="export-preview" class="export-preview" aria-label="Markdown 阅读预览"></div>
+    <div class="export-actions"><button id="export-save-as" type="button" class="primary">选择文件位置并保存…</button><button id="export-save-default" type="button">保存到默认目录</button><button id="export-copy" type="button">复制 Markdown</button></div>
+    <p id="export-path" class="hint"></p>
+    <details><summary>查看 Markdown 源码</summary><label>Markdown 源码<textarea id="export-content" rows="12" readonly spellcheck="false"></textarea></label></details>
+    <p id="export-message" class="hint" role="status"></p>
+  </dialog>
+  <dialog id="note-edit-dialog">
+    <form id="note-edit-form">
+      <div class="dialog-head"><h2>编辑工作记录</h2><button type="button" data-close="note-edit-dialog" class="plain">取消</button></div>
+      <p id="note-edit-context" class="hint"></p>
+      <label>记录内容<textarea name="note" rows="8" required maxlength="20000"></textarea></label>
+      <p class="hint">保存后保留创建时间和记录 ID，按最新更新时间置顶。其他窗口有修改时会拒绝覆盖，并保留当前草稿。</p>
+      <button class="primary" type="submit">保存修改</button>
+      <p class="form-error" role="alert"></p>
+    </form>
+  </dialog>
+</body>
+</html>

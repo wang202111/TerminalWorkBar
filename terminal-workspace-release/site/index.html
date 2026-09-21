@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>Terminal Workspace · 界面 Demo</title><link rel="stylesheet" href="demo.css"><script src="demo-content.js" defer></script><script src="demo-shell.js" defer></script></head>
+<body>
+  <header><a class="brand" href="index.html"><b>›_</b> Terminal Workspace</a><nav><a href="film.html">产品短片</a><a href="manual.html">完整手册 ↗</a></nav></header>
+  <main>
+    <div class="heading"><div><span class="eyebrow">LESS MOCKUP. MORE PRODUCT.</span><h1>这次，直接看产品界面。</h1></div><p>侧栏使用当前应用的原版前端。<br>可以自动演示，也可以停下来亲手点。</p></div>
+    <div class="switcher" role="group" aria-label="切换演示窗口"><button type="button" data-window="workspace" aria-pressed="true"><span>01</span> 终端 + 任务侧栏</button><button type="button" data-window="editor" aria-pressed="false"><span>02</span> 终端入口编辑</button><button type="button" data-window="markdown" aria-pressed="false"><span>03</span> Markdown 预览</button></div>
+    <section id="demo-window" class="demo-window" data-layout="workspace" aria-label="隔离的产品前端演示">
+      <div class="window-bar"><div class="dots"><i></i><i></i><i></i></div><span id="window-title">iTerm2 风格演示外框 · 右侧为真实 Sidebar 前端</span><span class="memory">DEMO / 内存数据</span></div>
+      <div class="window-body">
+        <section id="terminal" class="terminal" aria-label="模拟终端输出"><div class="terminal-tabs"><span id="terminal-tab">demo-dev — workspace</span><span>终端输出模拟</span></div><div class="terminal-content"><p class="terminal-kicker">ATLAS / DEMO WORKSPACE</p><pre id="terminal-output">$ ssh demo-dev
+$ tmux -u a -t workspace
+
+演示终端已就绪。
+右侧是当前应用的原版任务界面。
+
+点任务的终端按钮，观察“打开 / 复用”。
+这里不会建立 SSH 连接。
+▍</pre><div class="terminal-cards"><div><small>侧栏</small><strong>真实前端</strong><p>复用应用的表单和交互</p></div><div><small>后端</small><strong>虚构数据</strong><p>仅存在这次页面内存中</p></div></div></div><div class="terminal-status"><span id="run-state">0 个模拟运行入口</span><span>NO SHELL EXECUTION</span></div></section>
+        <section class="product-panel" aria-label="真实侧栏前端沙箱"><div class="product-label"><span>● 原版 Sidebar UI</span><span>数据与 API 均为模拟</span></div><iframe id="product-frame" title="可操作的 Terminal Sidebar 演示" sandbox="allow-scripts allow-forms" referrerpolicy="no-referrer"></iframe></section>
+      </div>
+      <div class="controls"><button id="toggle-play" type="button">Ⅱ 暂停，自己试</button><div class="caption"><strong id="step-title">正在载入真实前端…</strong><span id="step-description">不用安装，不连接真实终端。</span></div><select id="demo-speed" aria-label="演示速度"><option value="1.5" selected>快速 · 1.5×</option><option value="2">更快 · 2×</option><option value="1">正常 · 1×</option></select><button id="reset-demo" type="button">↺ 重置</button></div>
+    </section>
+    <p class="boundary">侧栏是原版网页前端；Mac 外框、终端输出及 API 是模拟，不是原生窗口录屏。每段自动播放一遍后停止，保留结果，可直接操作。手动编辑后继续演示、重播、切换窗口、刷新或重置会清空演示修改。导入及写文件不在此 demo 开放。</p>
+    <p id="demo-error" role="alert" hidden></p>
+  </main>
+</body></html>

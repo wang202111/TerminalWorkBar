@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "revision": 0,
+  "imports": [],
+  "tasks": [
+    {"id":"example-project","title":"示例项目 Alpha","parent_id":"","kind":"group","done":false,"command_id":"","notes":[],"created":"2026-01-01T09:00:00+00:00","updated":"2026-01-01T09:00:00+00:00"},
+    {"id":"example-environment","title":"检查本地环境","parent_id":"example-project","kind":"task","done":false,"command_id":"demo-shell","notes":[{"id":"example-note-1","text":"这是一条虚构记录。\n点击本地示例只输出一行文字，不访问服务器。","created":"2026-01-01T09:00:00+00:00"}],"created":"2026-01-01T09:00:00+00:00","updated":"2026-01-01T09:00:00+00:00"},
+    {"id":"example-log","title":"观察终端输出","parent_id":"example-environment","kind":"task","done":false,"command_id":"","notes":[],"created":"2026-01-01T09:00:00+00:00","updated":"2026-01-01T09:00:00+00:00"},
+    {"id":"example-remote","title":"连接示例工作区（需配置真实主机）","parent_id":"example-project","kind":"task","done":false,"command_id":"demo-ssh","notes":[],"created":"2026-01-01T09:00:00+00:00","updated":"2026-01-01T09:00:00+00:00"},
+    {"id":"example-release","title":"示例发布检查","parent_id":"","kind":"group","done":false,"command_id":"","notes":[],"created":"2026-01-01T09:00:00+00:00","updated":"2026-01-01T09:00:00+00:00"},
+    {"id":"example-checklist","title":"整理检查清单","parent_id":"example-release","kind":"task","done":false,"command_id":"","notes":[{"id":"example-note-2","text":"阅读版适合分享；保留 ID 的版本适合精确回导。","created":"2026-01-01T09:00:00+00:00"}],"created":"2026-01-01T09:00:00+00:00","updated":"2026-01-01T09:00:00+00:00"},
+    {"id":"example-review","title":"核对示例不包含真实数据","parent_id":"example-checklist","kind":"task","done":true,"command_id":"","notes":[],"created":"2026-01-01T09:00:00+00:00","updated":"2026-01-01T09:00:00+00:00"}
+  ]
+}

@@ -1,0 +1,10 @@
+Host demo-dev
+    HostName dev.example.invalid
+    User example
+
+Host demo-staging
+    HostName staging.example.invalid
+    User example
+
+Host *.example.invalid
+    ServerAliveInterval 30

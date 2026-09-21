@@ -1,0 +1,11 @@
+{
+  "demo-shell": {
+    "title": "示例：本地输出",
+    "argv": ["/bin/zsh", "-lc", "printf 'Demo terminal\\n'"],
+    "cwd": "~"
+  },
+  "demo-ssh": {
+    "title": "示例：远端工作区",
+    "argv": ["/usr/bin/ssh", "-t", "demo-dev", "tmux -u a -t workspace"]
+  }
+}
