@@ -11,7 +11,7 @@ async def main(connection):
         raise RuntimeError('无法创建可显示侧栏的 iTerm2 窗口。')
     await window.async_activate()
     await app.async_activate(raise_all_windows=False)
-    tool_url = sys.argv[1] + ('&' if '?' in sys.argv[1] else '?') + 'ui=release-1.1.1'
+    tool_url = sys.argv[1] + ('&' if '?' in sys.argv[1] else '?') + 'ui=release-1.2.0-dev.1'
     await iterm2.async_register_web_view_tool(
         connection, 'Terminal Sidebar', 'local.terminal-sidebar.v2', True, tool_url,
     )

@@ -96,7 +96,7 @@ end run
         with info.open('rb') as source_file:
             metadata = plistlib.load(source_file)
         metadata.update({'CFBundleIdentifier': 'local.terminal-sidebar.app', 'CFBundleName': 'Terminal Sidebar',
-                         'CFBundleShortVersionString': '1.1.1', 'LSUIElement': True,
+                         'CFBundleShortVersionString': '1.2.0', 'LSUIElement': True,
                          'NSAppleEventsUsageDescription': '注册 iTerm2 任务侧栏并定位已配置的终端。'})
         with info.open('wb') as destination:
             plistlib.dump(metadata, destination)
